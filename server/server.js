@@ -3,9 +3,6 @@ import colors from "colors";
 import dotenv from "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import userRouter from "./route/user.js";
-import authRouter from "./route/auth.js";
-import { errorHandler } from "./middlewares/errorhandler.js";
 import { mongoBDConnect } from "./config/db.js";
 import { clerkMiddleware } from "@clerk/express";
 import clerkWebHooks from "./controllers/clearkWebhook.js";
@@ -36,11 +33,6 @@ app.use("/api/clerk", clerkWebHooks);
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/auth", authRouter);
-
-// use error handler
-app.use(errorHandler);
 
 mongoBDConnect();
 
