@@ -8,7 +8,6 @@ const userSchema = mongoose.Schema(
     },
     username: {
       type: String,
-      trim: true,
       required: true,
     },
     image: {
@@ -17,7 +16,6 @@ const userSchema = mongoose.Schema(
     },
     email: {
       type: String,
-      trim: true,
       required: true,
     },
     mobile: {
@@ -27,8 +25,6 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      trim: true,
-      required: true,
     },
     role: {
       type: String,
@@ -38,16 +34,14 @@ const userSchema = mongoose.Schema(
     recentSearchCities: [
       {
         type: String,
-        required: true,
       },
     ],
   },
   {
     timestamps: true,
-    versionKey: false,
   }
 );
 
-const User = mongoose.model("users", userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

@@ -7,12 +7,13 @@ import { mongoBDConnect } from "./config/db.js";
 import { clerkMiddleware } from "@clerk/express";
 import clerkWebHooks from "./controllers/clearkWebhook.js";
 
+mongoBDConnect();
+
 // initialization
 const app = express();
 
 // set middlewares
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(clerkMiddleware());
 app.use(cookieParser());
 app.use(
@@ -26,15 +27,13 @@ app.use(
 const PORT = process.env.PORT || 9090;
 
 // static folder
-app.use(express.static("public"));
+// app.use(express.static("public"));
 
 // routing
 app.use("/api/clerk", clerkWebHooks);
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
-
-mongoBDConnect();
 
 // app listen
 app.listen(PORT, () => {
