@@ -26,11 +26,13 @@ app.use(
 // set environment vars
 const PORT = process.env.PORT || 9090;
 
+app.use("/api/protected", clerkMiddleware());
+
 // static folder
 // app.use(express.static("public"));
 
 // routing
-app.use("/api/clerk", clerkWebHooks);
+app.post("/api/clerk", clerkWebHooks);
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
