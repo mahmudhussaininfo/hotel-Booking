@@ -22,7 +22,10 @@ app.use(clerkMiddleware());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:3131",
+    origin: [
+      "http://localhost:3131",
+      "https://hotel-booking-kappa-two.vercel.app",
+    ],
     credentials: true,
   })
 );
