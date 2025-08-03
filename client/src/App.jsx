@@ -11,9 +11,14 @@ import OwnerLayout from "./components/HotelOwner/OwnerLayout.jsx";
 import AddRoom from "./pages/AddRoom.jsx";
 import ListRoom from "./pages/ListRoom.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import { Toaster } from "react-hot-toast";
+import { AppContext } from "./context/AppContext.jsx";
+import About from "./pages/About.jsx";
+import Experience from "./pages/Experience.jsx";
 
 function App() {
-  const { darkMode, showModal } = useContext(ThemeContext);
+  const { darkMode } = useContext(ThemeContext);
+  const { showModal } = useContext(AppContext);
 
   return (
     <>
@@ -24,11 +29,14 @@ function App() {
           darkMode ? "dark dark:bg-[#12141D] dark:text-white" : ""
         }`}
       >
+        <Toaster />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/rooms" element={<AllRooms />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
           <Route path="/bookings" element={<MyBookings />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/experience" element={<Experience />} />
           <Route path="/owner" element={<OwnerLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="add-room" element={<AddRoom />} />

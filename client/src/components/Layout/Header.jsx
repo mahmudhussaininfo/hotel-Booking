@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { assets } from "./../../assets/assets";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
+import { Link, useLocation } from "react-router-dom";
+import { useClerk, UserButton } from "@clerk/clerk-react";
 import { MdOutlineDarkMode, MdDarkMode } from "react-icons/md";
 import { ThemeContext } from "../../context/ThemeContext.jsx";
+import { AppContext } from "../../context/AppContext.jsx";
 
 const Header = () => {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
+  const { user, isOwner, navigate, setShowModal } = useContext(AppContext);
+
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Hotels", path: "/rooms" },
@@ -42,8 +45,6 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { openSignIn } = useClerk();
-  const { user } = useUser();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,7 +62,7 @@ const Header = () => {
           location.pathname !== "/" && "bg-gray-800/40"
         } fixed  top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
           isScrolled
-            ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4"
+            ? "bg-white/80 dark:bg-gray-900 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4"
             : "py-4 md:py-6"
         }`}
       >
@@ -70,7 +71,7 @@ const Header = () => {
           <img
             src={assets.logo}
             alt="logo"
-            className={`h-9 ${isScrolled && "invert opacity-80"}`}
+            className={`h-9 ${isScrolled && "invert opacity-80"} dark:invert-0`}
           />
         </Link>
 
@@ -82,7 +83,7 @@ const Header = () => {
               to={link.path}
               className={`group flex flex-col gap-0.5 ${
                 isScrolled ? "text-gray-700" : "text-white"
-              }`}
+              } dark:text-white transition-all duration-300`}
             >
               {link.name}
               <div
@@ -92,13 +93,18 @@ const Header = () => {
               />
             </Link>
           ))}
-          <button
-            className={`border px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
-              isScrolled ? "text-black" : "text-white"
-            } transition-all`}
-          >
-            Dashboard
-          </button>
+          {user && (
+            <button
+              onClick={() =>
+                isOwner ? navigate("/owner") : setShowModal(true)
+              }
+              className={`border hover:border-black hover:bg-black hover:text-white transition-all duration-300 px-4 py-1 text-sm font-light rounded-full cursor-pointer ${
+                isScrolled ? "text-black" : "text-white"
+              } transition-all dark:text-white`}
+            >
+              {isOwner ? "Dashboard" : "List Your Hotel"}
+            </button>
+          )}
         </div>
 
         {/* Desktop Right */}
@@ -192,20 +198,13 @@ const Header = () => {
             </Link>
           ))}
 
-          <button className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all">
-            Dashboard
-          </button>
-
           {user ? (
-            <UserButton>
-              <UserButton.MenuItems>
-                <UserButton.Action
-                  label="My Bookings"
-                  labelIcon={<BookIcon />}
-                  onClick={() => navigate("/bookings")}
-                />
-              </UserButton.MenuItems>
-            </UserButton>
+            <button
+              onClick={() => navigate("/owner")}
+              className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all"
+            >
+              Dashboard
+            </button>
           ) : (
             <button
               onClick={openSignIn}

@@ -1,11 +1,57 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Layout from "../components/Layout/Layout.jsx";
 import Title from "../components/Title.jsx";
 import { assets, userBookingsDummyData } from "../assets/assets.js";
 import moment from "moment";
+import { AppContext } from "../context/AppContext.jsx";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 const MyBookings = () => {
-  const [bookings, setBookings] = useState(userBookingsDummyData);
+  const { getToken, BaseURL } = useContext(AppContext);
+  const [bookings, setBookings] = useState([]);
+
+  // get user booking
+  const getUsersBookings = async () => {
+    try {
+      const { data } = await axios.get(`${BaseURL}/booking/user-booking`, {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      });
+      if (data.success) {
+        toast.success(data.message);
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  // toggle payment status
+  const handlePaid = async (id) => {
+    try {
+      const { data } = await axios.post(
+        `${BaseURL}/booking/update-booking`,
+        { id },
+        {
+          headers: { Authorization: `Bearer ${await getToken()}` },
+        }
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getUsersBookings();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getUsersBookings();
+  }, []);
 
   return (
     <>
@@ -83,7 +129,10 @@ const MyBookings = () => {
                     ></div>
                     <p> {booking.isPaid ? "Paid" : "Unpaid"}</p>
                     {booking.isPaid !== true && (
-                      <button className="border border-gray-500 px-3 py-1 mt-2 rounded-full">
+                      <button
+                        onClick={() => handlePaid(booking._id)}
+                        className="border cursor-pointer border-gray-500 px-3 py-1 mt-2 rounded-full"
+                      >
                         Pay Now
                       </button>
                     )}

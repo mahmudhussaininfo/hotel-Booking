@@ -6,6 +6,10 @@ import cookieParser from "cookie-parser";
 import { mongoBDConnect } from "./config/db.js";
 import { clerkMiddleware } from "@clerk/express";
 import clerkWebHooks from "./controllers/clearkWebhook.js";
+import userRoute from "./route/user.js";
+import hotelRoute from "./route/hotelRoute.js";
+import roomRoute from "./route/roomRoute.js";
+import bookingRoute from "./route/bookingRoute.js";
 
 mongoBDConnect();
 
@@ -26,13 +30,15 @@ app.use(
 // set environment vars
 const PORT = process.env.PORT || 9090;
 
-app.use("/api/protected", clerkMiddleware());
-
 // static folder
-// app.use(express.static("public"));
+app.use(express.static("public"));
 
 // routing
-app.post("/api/clerk", clerkWebHooks);
+app.use("/api/clerk", clerkWebHooks);
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1/hotel", hotelRoute);
+app.use("/api/v1/room", roomRoute);
+app.use("/api/v1/booking", bookingRoute);
 app.get("/", (req, res) => {
   res.send("Server is running");
 });

@@ -1,7 +1,32 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { assets, cities } from "../../assets/assets.js";
+import { AppContext } from "../../context/AppContext.jsx";
+import axios from "axios";
 
 const Hero = () => {
+  const [destination, setDestination] = useState("");
+  const { getToken, navigate, setSearchCity, BaseURL } = useContext(AppContext);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    navigate(`/rooms?destination=${destination}`);
+
+    await axios.post(
+      `${BaseURL}/user/store-recent-search`,
+      { destination },
+      {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      }
+    );
+
+    setSearchCity((prev) => {
+      const updateSearchCity = [...prev, destination];
+      if (updateSearchCity.length > 3) {
+        updateSearchCity.shift();
+      }
+      return updateSearchCity;
+    });
+  };
   return (
     <>
       <div
@@ -18,13 +43,18 @@ const Hero = () => {
           Unparalleled luxury and comfort await at the world's most exclusive
           hotels and resorts. Start your journey today.
         </p>
-        <form className="bg-white my-5 mb-10 text-gray-500 rounded-lg px-6 py-4  flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto">
+        <form
+          onSubmit={handleSearch}
+          className="bg-white my-5 mb-10 text-gray-500 rounded-lg px-6 py-4  flex flex-col md:flex-row max-md:items-start gap-4 max-md:mx-auto"
+        >
           <div>
             <div className="flex items-center gap-2">
               <img src={assets.locationIcon} alt="" />
               <label htmlFor="destinationInput">Destination</label>
             </div>
             <input
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
               list="destinations"
               id="destinationInput"
               type="text"
@@ -77,7 +107,10 @@ const Hero = () => {
             />
           </div>
 
-          <button className="flex items-center justify-center gap-1 rounded-md bg-black py-2 px-4 text-white cursor-pointer mt-auto max-md:w-full max-md:py-1">
+          <button
+            type="submit"
+            className="flex items-center justify-center gap-1 rounded-md bg-black py-2 px-4 text-white cursor-pointer mt-auto max-md:w-full max-md:py-1"
+          >
             <img src={assets.searchIcon} alt="" />
             <span>Search</span>
           </button>

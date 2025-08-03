@@ -1,7 +1,39 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { assets, dashboardDummyData } from "../assets/assets.js";
+import axios from "axios";
+import { AppContext } from "../context/AppContext.jsx";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
+  const [dashboardData, setDashboardData] = useState({
+    totalBookings: 0,
+    totalRevenue: 0,
+    bookings: [],
+  });
+
+  const { BaseURL, getToken, user } = useContext(AppContext);
+
+  const fetchDashBoardData = async () => {
+    try {
+      const { data } = await axios.get(`${BaseURL}/booking/hotel-booking`, {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      });
+
+      if (data.success) {
+        setDashboardData(data.dashboardData);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchDashBoardData();
+    }
+  }, [user]);
+
   return (
     <>
       <div className="md:mx-5 pt-5">
@@ -20,7 +52,7 @@ const Dashboard = () => {
             <div>
               <h2 className="text-blue-400 font-semibold">Total Bookings</h2>
               <span className="text-gray-500 text-md">
-                {dashboardDummyData.totalBookings}
+                {dashboardData.totalBookings}
               </span>
             </div>
           </div>
@@ -29,7 +61,7 @@ const Dashboard = () => {
             <div>
               <h2 className="text-blue-400 font-semibold">Total Revenue</h2>
               <span className="text-gray-500 text-md">
-                $ {dashboardDummyData.totalRevenue}
+                $ {dashboardData.totalRevenue}
               </span>
             </div>
           </div>
@@ -41,10 +73,10 @@ const Dashboard = () => {
               <thead className="bg-gray-50 dark:bg-gray-500">
                 <tr>
                   <th className="py-3 px-4 text-gray-800 font-medium">
-                    User Name
+                    Hotel Name
                   </th>
                   <th className="py-3 px-4 text-gray-800 font-medium">
-                    Room Name
+                    Room Type
                   </th>
                   <th className="py-3 px-4 text-gray-800 font-medium text-center">
                     Total Amount
@@ -55,13 +87,13 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody className="text-sm">
-                {dashboardDummyData.bookings.map((item, index) => (
+                {dashboardData.bookings.map((item, index) => (
                   <tr
                     key={index}
                     className="border-b py-3 border-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600"
                   >
-                    <td className="py-3 px-4">{item.user.username}</td>
-                    <td className="py-3 px-4">{item.room.hotel.name}</td>
+                    <td className="py-3 px-4">{item.hotel.name}</td>
+                    <td className="py-3 px-4">{item.room.roomType}</td>
                     <td className="py-3 px-4 text-center">
                       $ {item.totalPrice}
                     </td>

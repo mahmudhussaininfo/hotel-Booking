@@ -1,9 +1,10 @@
-import React from "react";
-import { roomsDummyData } from "../../assets/assets.js";
+import React, { useContext } from "react";
 import HotelCard from "./HotelCard.jsx";
 import Title from "../Title.jsx";
+import { AppContext } from "../../context/AppContext.jsx";
 
 const Feature = () => {
+  const { roomData } = useContext(AppContext);
   return (
     <>
       <div className="dark:bg-[#12141D] dark:text-white flex flex-col items-center px-6 md:px-16 lg:px-24 py-20 bg-slate-100">
@@ -12,7 +13,7 @@ const Feature = () => {
           subtitle="Discover our handpicked selection of exceptional properties around the world, offering unparalleled luxury and unforgettable experiences"
         />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {roomsDummyData.slice(0, 4).map((room, index) => (
+          {roomData.slice(0, 4).map((room, index) => (
             <HotelCard key={room._id} room={room} index={index} />
           ))}
         </div>

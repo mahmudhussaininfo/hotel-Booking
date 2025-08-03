@@ -1,11 +1,10 @@
 import cloudinary from "cloudinary";
-import fs from "fs";
 
 // config cloudinary
 cloudinary.v2.config({
-  cloud_name: "dis89p0kx",
-  api_key: "179378785211637",
-  api_secret: "fjH24wym4yj0jxJRXm-2Bh7EbLw",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export const cloudUpload = async (req) => {
@@ -14,10 +13,14 @@ export const cloudUpload = async (req) => {
   return data;
 };
 
-export const cloudUploads = async (path) => {
-  // upload brand logo
-  const data = await cloudinary.v2.uploader.upload(path);
-  return data.secure_url;
+// multile image upload
+export const cloudMultipleUpload = async (files) => {
+  const uploads = files.map(async (file) => {
+    const data = await cloudinary.v2.uploader.upload(file.path);
+    return data.secure_url;
+  });
+
+  return Promise.all(uploads);
 };
 
 export const cloudDelete = async (publicId) => {

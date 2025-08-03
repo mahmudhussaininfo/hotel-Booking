@@ -7,6 +7,7 @@ import { ThemeContext } from "../../context/ThemeContext.jsx";
 
 const Navbar = () => {
   const { darkMode, setDarkMode } = useContext(ThemeContext);
+
   return (
     <>
       <div className="flex items-center justify-between py-4 md:px-8 px-4 shadow-md border-b border-gray-300 bg-whtie transition-all duration-300">

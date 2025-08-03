@@ -75,7 +75,15 @@ export const assets = {
   heroImg,
 };
 
-export const cities = ["Dubai", "Singapore", "New York", "London"];
+export const cities = [
+  "Sylhet",
+  "Dhaka",
+  "Chittagong",
+  "Khulna",
+  "Saint Martin",
+  "Cox's Bazar",
+  "Barisal",
+];
 
 // Exclusive Offers Dummy Data
 export const exclusiveOffers = [

@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets.js";
+import toast from "react-hot-toast";
+import { AppContext } from "../context/AppContext.jsx";
+import axios from "axios";
 
 const AddRoom = () => {
+  const { BaseURL, getToken } = useContext(AppContext);
+
   const [images, setImages] = useState({
     1: null,
     2: null,
     3: null,
     4: null,
   });
+
+  const [loading, setLoading] = useState(false);
 
   const [input, setInput] = useState({
     roomType: "",
@@ -38,6 +45,63 @@ const AddRoom = () => {
       });
     }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.roomType || !input.pricePerNight || !input.amenities) {
+      return toast.error("Please fill all the fields");
+    }
+
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("roomType", input.roomType);
+      formData.append("pricePerNight", input.pricePerNight);
+      const amenities = Object.keys(input.amenities).filter(
+        (amenity) => input.amenities[amenity]
+      );
+      formData.append("amenities", JSON.stringify(amenities));
+
+      Object.keys(images).forEach((key) => {
+        images[key] && formData.append("images", images[key]);
+      });
+
+      const { data } = await axios.post(
+        `${BaseURL}/room/room-create`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${await getToken()}` },
+        }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        setInput({
+          roomType: "",
+          pricePerNight: 0,
+          amenities: {
+            "Room Service": false,
+            "Free WiFi": false,
+            "Free Breakfast": false,
+            "Mountain View": false,
+            "Pool Access": false,
+          },
+        });
+        setImages({
+          1: null,
+          2: null,
+          3: null,
+          4: null,
+        });
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
       <div className="mx-5 pt-5">
@@ -51,7 +115,7 @@ const AddRoom = () => {
           </p>
 
           <div className="pt-5">
-            <form action="">
+            <form onSubmit={handleSubmit}>
               <p>Images</p>
 
               <div className="flex gap-2 mt-5">
@@ -83,7 +147,7 @@ const AddRoom = () => {
                 <div>
                   <h2 className="text-2xl">Room Type</h2>
                   <select
-                    className="border p-2 mt-3 border-gray-300 rounded-md outline-none"
+                    className="border dark:bg-black py-3 px-4 appearance-none cursor-pointer mt-3 border-gray-300 rounded-md outline-none"
                     value={input.roomType}
                     name="roomType"
                     onChange={handleChange}
@@ -130,8 +194,12 @@ const AddRoom = () => {
               </div>
 
               <div className="flex mt-5">
-                <button className="bg-[#49B9FF] text-white py-2 px-4 rounded-md">
-                  Add Room
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-[#49B9FF] text-white py-2 px-4 rounded-md"
+                >
+                  {loading ? "Adding Room..." : "Add Room"}
                 </button>
               </div>
             </form>
