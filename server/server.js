@@ -24,7 +24,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3131",
-      "https://hotel-booking-kappa-two.vercel.app/api/v1",
+      "https://hotel-booking-kappa-two.vercel.app",
     ],
     credentials: true,
   })
